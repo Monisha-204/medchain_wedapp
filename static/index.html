@@ -8,19 +8,19 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:        #090c10;
-  --surface:   #0e1318;
-  --card:      #131920;
-  --border:    #1e2a35;
-  --border2:   #253040;
-  --text:      #c8d8e8;
-  --muted:     #4a6070;
-  --accent:    #00d4ff;
-  --accent2:   #0088bb;
-  --green:     #00e5a0;
-  --amber:     #ffb800;
-  --red:       #ff4560;
-  --purple:    #a855f7;
+  --bg:        #f0f4f8;
+  --surface:   #e8eef5;
+  --card:      #ffffff;
+  --border:    #d0dce8;
+  --border2:   #b8cad8;
+  --text:      #1a2a3a;
+  --muted:     #6a8090;
+  --accent:    #0088bb;
+  --accent2:   #006699;
+  --green:     #00a070;
+  --amber:     #cc8800;
+  --red:       #dd2244;
+  --purple:    #7c3aed;
   --font-mono: 'JetBrains Mono', monospace;
   --font-ui:   'Syne', sans-serif;
 }
@@ -41,8 +41,8 @@ body::before {
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(0,212,255,.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,212,255,.03) 1px, transparent 1px);
+    linear-gradient(rgba(0,100,180,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,100,180,.06) 1px, transparent 1px);
   background-size: 40px 40px;
   pointer-events: none;
   z-index: 0;
@@ -58,7 +58,7 @@ nav {
   gap: 16px;
   padding: 0 28px;
   height: 60px;
-  background: rgba(9,12,16,.92);
+  background: rgba(240,244,248,.95);
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(12px);
   position: sticky; top: 0; z-index: 100;
