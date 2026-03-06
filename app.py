@@ -19,6 +19,7 @@ from blockchain import Blockchain
 app = Flask(__name__, static_folder="static")
 blockchain = Blockchain()
 lock = threading.Lock()
+port = int(os.environ.get("PORT", 5000))
 
 # ------------------------------------------------------------------ #
 #  CORS  (allow any origin so multiple machines can connect)          #
@@ -187,4 +188,4 @@ if __name__ == "__main__":
     print(f"  → http://localhost:5000")
     print(f"  → http://{local_ip}:5000")
     print("="*60 + "\n")
-    app.run(host="0.0.0.0", port=5000, debug=False, threaded=True)
+    app.run(host="0.0.0.0", port=port, debug=False, threaded=True)
