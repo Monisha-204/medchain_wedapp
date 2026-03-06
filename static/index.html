@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedChain — Medical Blockchain Network</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #090c10;
+  --surface:   #0e1318;
+  --card:      #131920;
+  --border:    #1e2a35;
+  --border2:   #253040;
+  --text:      #c8d8e8;
+  --muted:     #4a6070;
+  --accent:    #00d4ff;
+  --accent2:   #0088bb;
+  --green:     #00e5a0;
+  --amber:     #ffb800;
+  --red:       #ff4560;
+  --purple:    #a855f7;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-ui:   'Syne', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── GRID BACKGROUND ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── LAYOUT ── */
+#app { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ── NAV ── */
+nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 28px;
+  height: 60px;
+  background: rgba(9,12,16,.92);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  position: sticky; top: 0; z-index: 100;
+}
+
+.nav-logo {
+  font-family: var(--font-ui);
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: -0.5px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.nav-logo span { color: var(--accent); }
+
+.chain-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--green);
+  background: rgba(0,229,160,.08);
+  border: 1px solid rgba(0,229,160,.2);
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+}
+
+nav .spacer { flex: 1; }
+
+.stats-bar {
+  display: flex;
+  gap: 20px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+}
+.stat-pill b { color: var(--accent); font-weight: 500; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{ opacity:1; } 50%{ opacity:.4; } }
+
+/* ── ROLE SELECTOR ── */
+#role-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  gap: 48px;
+}
+
+.role-hero h1 {
+  font-size: clamp(28px, 5vw, 52px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  text-align: center;
+  color: #fff;
+}
+.role-hero h1 em { color: var(--accent); font-style: normal; }
+.role-hero p {
+  margin-top: 14px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  text-align: center;
+  letter-spacing: .5px;
+}
+
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.role-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 24px;
+  cursor: pointer;
+  transition: all .25s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.role-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity .25s;
+  border-radius: 16px;
+}
+.role-card:hover { border-color: var(--border2); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+.role-card:hover::before { opacity: 1; }
+
+.role-card[data-role="DiagnosticCenter"] { --rc: var(--accent); }
+.role-card[data-role="DoctorClinic"]     { --rc: var(--green); }
+.role-card[data-role="Pharmacy"]         { --rc: var(--amber); }
+.role-card[data-role="Ledger"]           { --rc: var(--purple); }
+
+.role-card::before { background: radial-gradient(circle at top left, color-mix(in srgb, var(--rc) 8%, transparent), transparent 60%); }
+.role-card:hover { border-color: color-mix(in srgb, var(--rc) 40%, var(--border)); }
+
+.role-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  background: color-mix(in srgb, var(--rc) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rc) 25%, transparent);
+}
+.role-name { font-size: 17px; font-weight: 700; color: #fff; }
+.role-desc { font-family: var(--font-mono); font-size: 11px; color: var(--muted); line-height: 1.6; }
+.role-fee {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--rc);
+  background: color-mix(in srgb, var(--rc) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rc) 20%, transparent);
+  padding: 4px 10px;
+  border-radius: 6px;
+  width: fit-content;
+}
+
+/* ── DASHBOARD ── */
+#dashboard { display: none; flex: 1; flex-direction: column; }
+#dashboard.active { display: flex; }
+
+.dash-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 28px 0;
+}
+.dash-title { font-size: 22px; font-weight: 700; color: #fff; }
+.dash-role-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid;
+}
+.back-btn {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.back-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  gap: 2px;
+  padding: 16px 28px 0;
+  border-bottom: 1px solid var(--border);
+}
+.tab {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 8px 18px;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  color: var(--muted);
+  border: 1px solid transparent;
+  border-bottom: none;
+  transition: all .2s;
+  background: transparent;
+  position: relative;
+  bottom: -1px;
+}
+.tab:hover { color: var(--text); }
+.tab.active {
+  color: var(--accent);
+  background: var(--card);
+  border-color: var(--border);
+  border-bottom-color: var(--card);
+}
+
+/* ── PANELS ── */
+.panels { flex: 1; padding: 24px 28px; display: flex; flex-direction: column; gap: 20px; }
+.panel { display: none; flex-direction: column; gap: 20px; }
+.panel.active { display: flex; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-title::before { content: ''; display: block; width: 3px; height: 14px; background: var(--accent); border-radius: 2px; }
+
+/* ── FORMS ── */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-grid.single { grid-template-columns: 1fr; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: .5px; }
+.field input, .field textarea, .field select {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  outline: none;
+  transition: border-color .2s;
+  resize: none;
+}
+.field input:focus, .field textarea:focus { border-color: var(--accent); }
+.field textarea { min-height: 80px; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all .2s;
+  letter-spacing: .5px;
+}
+.btn-primary { background: var(--accent); color: #000; }
+.btn-primary:hover { background: #33deff; box-shadow: 0 0 20px rgba(0,212,255,.3); }
+.btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border2); }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ── TOAST ── */
+#toast-container { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 10px; z-index: 9999; }
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  max-width: 360px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  animation: slideIn .3s ease;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error   { border-left: 3px solid var(--red); }
+.toast.info    { border-left: 3px solid var(--accent); }
+.toast-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.toast-body { flex: 1; }
+.toast-title { color: #fff; font-weight: 500; margin-bottom: 3px; }
+.toast-msg { color: var(--muted); line-height: 1.4; }
+@keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* ── TABLES ── */
+.table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 12px; }
+thead th {
+  background: var(--surface);
+  padding: 10px 14px;
+  text-align: left;
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+tbody td { padding: 11px 14px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: top; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: rgba(0,212,255,.02); }
+
+/* ── BLOCK CARD ── */
+.block-list { display: flex; flex-direction: column; gap: 10px; }
+.block-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 14px;
+  align-items: center;
+}
+.block-num {
+  background: rgba(0,212,255,.1);
+  color: var(--accent);
+  border: 1px solid rgba(0,212,255,.2);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.block-hash { color: var(--muted); word-break: break-all; line-height: 1.4; }
+.block-hash b { color: var(--text); display: block; margin-bottom: 2px; }
+.block-txns {
+  background: rgba(0,229,160,.08);
+  color: var(--green);
+  border: 1px solid rgba(0,229,160,.15);
+  padding: 3px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+/* ── WALLET BARS ── */
+.wallet-list { display: flex; flex-direction: column; gap: 12px; }
+.wallet-row { display: flex; align-items: center; gap: 14px; }
+.wallet-name { font-family: var(--font-mono); font-size: 12px; color: var(--text); width: 160px; flex-shrink: 0; }
+.wallet-bar-wrap { flex: 1; height: 8px; background: var(--surface); border-radius: 4px; overflow: hidden; }
+.wallet-bar { height: 100%; border-radius: 4px; transition: width .6s ease; }
+.wallet-amount { font-family: var(--font-mono); font-size: 12px; color: var(--accent); width: 80px; text-align: right; }
+
+/* ── PATIENT RECORD ── */
+.patient-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.patient-card-header {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 20px;
+  background: rgba(0,212,255,.04);
+  border-bottom: 1px solid var(--border);
+}
+.patient-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: rgba(0,212,255,.1);
+  border: 2px solid rgba(0,212,255,.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.patient-name { font-size: 16px; font-weight: 700; color: #fff; }
+.patient-meta { font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-top: 2px; }
+.patient-card-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; }
+.info-row { display: flex; flex-direction: column; gap: 4px; }
+.info-label { font-family: var(--font-mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+.info-val { font-family: var(--font-mono); font-size: 12px; color: var(--text); }
+.tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 5px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  margin: 2px;
+}
+.tag-blue  { background: rgba(0,212,255,.1);  color: var(--accent); border: 1px solid rgba(0,212,255,.2); }
+.tag-green { background: rgba(0,229,160,.1);  color: var(--green);  border: 1px solid rgba(0,229,160,.2); }
+.tag-amber { background: rgba(255,184,0,.1);   color: var(--amber);  border: 1px solid rgba(255,184,0,.2); }
+
+/* ── TX TYPE BADGE ── */
+.tx-type {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+.tx-GENESIS      { background: rgba(168,85,247,.15); color: var(--purple); }
+.tx-INCENTIVE    { background: rgba(255,69,96,.12);  color: var(--red); }
+.tx-MINING_REWARD{ background: rgba(255,184,0,.12);  color: var(--amber); }
+.tx-ADD_PATIENT  { background: rgba(0,212,255,.12);  color: var(--accent); }
+.tx-ADD_TEST_REPORT    { background: rgba(0,212,255,.1);  color: var(--accent); }
+.tx-UPDATE_SYMPTOMS    { background: rgba(0,229,160,.12); color: var(--green); }
+.tx-ADD_PRESCRIPTION   { background: rgba(0,229,160,.12); color: var(--green); }
+.tx-GET_PRESCRIPTION   { background: rgba(255,184,0,.12); color: var(--amber); }
+
+/* ── VALIDITY ── */
+.valid-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 12px;
+  padding: 6px 14px; border-radius: 8px;
+}
+.valid-badge.ok  { background: rgba(0,229,160,.1); color: var(--green); border: 1px solid rgba(0,229,160,.2); }
+.valid-badge.bad { background: rgba(255,69,96,.1);  color: var(--red);   border: 1px solid rgba(255,69,96,.2); }
+
+/* ── LOADER ── */
+.spinner {
+  width: 18px; height: 18px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── EMPTY STATE ── */
+.empty {
+  text-align: center;
+  padding: 40px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.empty .emoji { font-size: 32px; display: block; margin-bottom: 12px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .form-grid { grid-template-columns: 1fr; }
+  nav .stats-bar { display: none; }
+  .panels { padding: 16px; }
+  .dash-header { padding: 16px 16px 0; }
+  .tabs { padding: 16px 16px 0; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">⛓ Med<span>Chain</span></div>
+  <div class="chain-badge" id="chain-status">● LIVE</div>
+  <div class="spacer"></div>
+  <div class="stats-bar" id="nav-stats">
+    <div class="stat-pill"><div class="dot"></div> <span>Blocks: <b id="nav-blocks">—</b></span></div>
+    <div class="stat-pill">Patients: <b id="nav-patients">—</b></div>
+    <div class="stat-pill">Txns: <b id="nav-txns">—</b></div>
+  </div>
+</nav>
+
+<!-- ROLE SELECTION SCREEN -->
+<div id="role-screen">
+  <div class="role-hero">
+    <h1>Medical Blockchain<br><em>Network</em></h1>
+    <p>Decentralised patient records · Immutable audit trail · Incentive-driven nodes</p>
+  </div>
+
+  <div class="role-grid">
+    <div class="role-card" data-role="DiagnosticCenter" onclick="selectRole('DiagnosticCenter')">
+      <div class="role-icon">🔬</div>
+      <div>
+        <div class="role-name">Diagnostic Center</div>
+        <div class="role-desc">Register new patients and submit lab test reports to the blockchain.</div>
+      </div>
+      <div class="role-fee">2 tokens / operation</div>
+    </div>
+    <div class="role-card" data-role="DoctorClinic" onclick="selectRole('DoctorClinic')">
+      <div class="role-icon">🏥</div>
+      <div>
+        <div class="role-name">Doctor Clinic</div>
+        <div class="role-desc">Access patient records, log symptoms and issue prescriptions.</div>
+      </div>
+      <div class="role-fee">2 tokens / operation</div>
+    </div>
+    <div class="role-card" data-role="Pharmacy" onclick="selectRole('Pharmacy')">
+      <div class="role-icon">💊</div>
+      <div>
+        <div class="role-name">Pharmacy</div>
+        <div class="role-desc">Retrieve patient prescriptions to dispense medication securely.</div>
+      </div>
+      <div class="role-fee">2 tokens / operation</div>
+    </div>
+    <div class="role-card" data-role="Ledger" onclick="selectRole('Ledger')">
+      <div class="role-icon">📒</div>
+      <div>
+        <div class="role-name">Ledger Node</div>
+        <div class="role-desc">Audit the full chain, all transactions and wallet balances.</div>
+      </div>
+      <div class="role-fee">read-only · no fee</div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="dash-header">
+    <div class="dash-title" id="dash-title">—</div>
+    <div class="dash-role-badge" id="dash-badge">—</div>
+    <button class="back-btn" onclick="goBack()">← Switch Role</button>
+  </div>
+
+  <!-- TABS generated per role -->
+  <div class="tabs" id="tabs"></div>
+
+  <!-- PANELS container -->
+  <div class="panels" id="panels"></div>
+</div>
+
+</div><!-- #app -->
+
+<!-- TOAST -->
+<div id="toast-container"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════════════
+const API = window.location.origin; // same server serves frontend + API
+
+// ═══════════════════════════════════════════════════════
+//  API HELPERS
+// ═══════════════════════════════════════════════════════
+async function apiFetch(method, path, body) {
+  try {
+    const opts = { method, headers: { 'Content-Type': 'application/json' } };
+    if (body) opts.body = JSON.stringify(body);
+    const res = await fetch(API + path, opts);
+    return await res.json();
+  } catch(e) {
+    return { success: false, result: e.message };
+  }
+}
+const GET  = (p)    => apiFetch('GET',  p);
+const POST = (p, b) => apiFetch('POST', p, b);
+
+// ═══════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════
+function toast(type, title, msg, dur=4000) {
+  const icons = { success:'✅', error:'❌', info:'ℹ️' };
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<div class="toast-icon">${icons[type]||'•'}</div>
+    <div class="toast-body"><div class="toast-title">${title}</div><div class="toast-msg">${msg}</div></div>`;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), dur);
+}
+
+// ═══════════════════════════════════════════════════════
+//  NAV STATS
+// ═══════════════════════════════════════════════════════
+async function refreshStats() {
+  const r = await GET('/api/stats');
+  if (r.success) {
+    document.getElementById('nav-blocks').textContent   = r.result.blocks;
+    document.getElementById('nav-patients').textContent = r.result.patients;
+    document.getElementById('nav-txns').textContent     = r.result.transactions;
+  }
+}
+setInterval(refreshStats, 5000);
+refreshStats();
+
+// ═══════════════════════════════════════════════════════
+//  ROLE CONFIG
+// ═══════════════════════════════════════════════════════
+const ROLES = {
+  DiagnosticCenter: {
+    label: '🔬 Diagnostic Center',
+    color: 'var(--accent)',
+    tabs: ['Register Patient','View Patient','Add Test Report'],
+  },
+  DoctorClinic: {
+    label: '🏥 Doctor Clinic',
+    color: 'var(--green)',
+    tabs: ['View Patient','Update Symptoms','Add Prescription'],
+  },
+  Pharmacy: {
+    label: '💊 Pharmacy',
+    color: 'var(--amber)',
+    tabs: ['View Patient','Get Prescriptions'],
+  },
+  Ledger: {
+    label: '📒 Ledger Node',
+    color: 'var(--purple)',
+    tabs: ['Chain Explorer','All Transactions','Wallets','Validate'],
+  },
+};
+
+let currentRole = null;
+
+function selectRole(role) {
+  currentRole = role;
+  const cfg = ROLES[role];
+
+  document.getElementById('role-screen').style.display = 'none';
+  const dash = document.getElementById('dashboard');
+  dash.classList.add('active');
+
+  document.getElementById('dash-title').textContent = cfg.label;
+  const badge = document.getElementById('dash-badge');
+  badge.textContent = role;
+  badge.style.cssText = `color:${cfg.color};background:color-mix(in srgb, ${cfg.color} 12%, transparent);border:1px solid color-mix(in srgb, ${cfg.color} 30%, transparent);`;
+
+  buildTabs(role, cfg.tabs);
+  refreshStats();
+}
+
+function goBack() {
+  currentRole = null;
+  document.getElementById('dashboard').classList.remove('active');
+  document.getElementById('role-screen').style.display = '';
+}
+
+// ═══════════════════════════════════════════════════════
+//  TAB SYSTEM
+// ═══════════════════════════════════════════════════════
+function buildTabs(role, tabs) {
+  const tabBar  = document.getElementById('tabs');
+  const panels  = document.getElementById('panels');
+  tabBar.innerHTML = '';
+  panels.innerHTML = '';
+
+  tabs.forEach((name, i) => {
+    const t = document.createElement('div');
+    t.className = 'tab' + (i===0?' active':'');
+    t.textContent = name;
+    t.onclick = () => activateTab(i);
+    tabBar.appendChild(t);
+
+    const p = document.createElement('div');
+    p.className = 'panel' + (i===0?' active':'');
+    p.id = 'panel-' + i;
+    p.innerHTML = buildPanel(role, name);
+    panels.appendChild(p);
+
+    if (i===0) onPanelShow(role, name, p);
+  });
+}
+
+function activateTab(idx) {
+  document.querySelectorAll('.tab').forEach((t,i)   => t.classList.toggle('active', i===idx));
+  document.querySelectorAll('.panel').forEach((p,i) => {
+    const wasActive = p.classList.contains('active');
+    p.classList.toggle('active', i===idx);
+    if (!wasActive && i===idx) {
+      const tabs = ROLES[currentRole].tabs;
+      onPanelShow(currentRole, tabs[idx], p);
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  PANEL BUILDER
+// ═══════════════════════════════════════════════════════
+function buildPanel(role, name) {
+  if (name==='Register Patient') return panelRegisterPatient();
+  if (name==='View Patient')     return panelViewPatient(role);
+  if (name==='Add Test Report')  return panelAddTestReport();
+  if (name==='Update Symptoms')  return panelUpdateSymptoms();
+  if (name==='Add Prescription') return panelAddPrescription();
+  if (name==='Get Prescriptions')return panelGetPrescriptions();
+  if (name==='Chain Explorer')   return panelChainExplorer();
+  if (name==='All Transactions') return panelAllTransactions();
+  if (name==='Wallets')          return panelWallets();
+  if (name==='Validate')         return panelValidate();
+  return '<div class="empty"><span class="emoji">🚧</span>Coming soon</div>';
+}
+
+// ─── PANEL: Register Patient ─────────────────────────
+function panelRegisterPatient() {
+  return `<div class="card">
+    <div class="card-title">Register New Patient</div>
+    <div class="form-grid">
+      <div class="field"><label>Patient ID</label><input id="rp-id" placeholder="e.g. P001"></div>
+      <div class="field"><label>Full Name</label><input id="rp-name" placeholder="e.g. Alice Johnson"></div>
+      <div class="field"><label>Age</label><input id="rp-age" placeholder="e.g. 34"></div>
+      <div class="field"><label>Blood Type</label>
+        <select id="rp-blood">
+          <option value="">Select...</option>
+          ${['A+','A-','B+','B-','AB+','AB-','O+','O-'].map(b=>`<option>${b}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <br>
+    <button class="btn btn-primary" onclick="doRegisterPatient()">⛓ Register on Blockchain</button>
+  </div>
+  <div id="rp-result"></div>`;
+}
+
+async function doRegisterPatient() {
+  const id    = document.getElementById('rp-id').value.trim();
+  const name  = document.getElementById('rp-name').value.trim();
+  const age   = document.getElementById('rp-age').value.trim();
+  const blood = document.getElementById('rp-blood').value;
+  if (!id||!name||!age||!blood) { toast('error','Missing fields','Please fill all fields.'); return; }
+
+  const r = await POST('/api/patients', { patient_id:id, name, age, blood_type:blood, requester:'DiagnosticCenter' });
+  if (r.success) {
+    toast('success','Patient Registered', `Block #${r.result.block?.index} mined.`);
+    document.getElementById('rp-result').innerHTML = blockResult(r.result);
+    refreshStats();
+  } else { toast('error','Error', r.result || r.error); }
+}
+
+// ─── PANEL: View Patient ─────────────────────────────
+function panelViewPatient(role) {
+  return `<div class="card">
+    <div class="card-title">Lookup Patient Record</div>
+    <div class="form-grid">
+      <div class="field"><label>Patient ID</label><input id="vp-id" placeholder="e.g. P001"></div>
+    </div>
+    <br>
+    <button class="btn btn-primary" onclick="doViewPatient('${role}')">🔍 Fetch Record</button>
+  </div>
+  <div id="vp-result"></div>
+  <div id="vp-patients-list">
+    <div class="card">
+      <div class="card-title">All Patients</div>
+      <div id="vp-all"><div class="spinner"></div></div>
+    </div>
+  </div>`;
+}
+
+async function doViewPatient(role) {
+  const id = document.getElementById('vp-id').value.trim();
+  if (!id) { toast('error','Missing ID','Enter a patient ID.'); return; }
+  const r = await GET('/api/patients/' + id);
+  if (r.success) {
+    document.getElementById('vp-result').innerHTML = renderPatientFull(r.result, role);
+  } else { toast('error','Not Found', r.result); }
+}
+
+async function loadAllPatients(targetId) {
+  const r = await GET('/api/patients');
+  const el = document.getElementById(targetId);
+  if (!el) return;
+  if (!r.success || !r.result.length) {
+    el.innerHTML = '<div class="empty"><span class="emoji">👥</span>No patients registered yet.</div>';
+    return;
+  }
+  el.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>ID</th><th>Name</th><th>Age</th><th>Blood</th><th>Reports</th><th>Rx</th><th>Symptoms</th><th>Registered</th></tr></thead>
+    <tbody>
+    ${r.result.map(p=>`<tr>
+      <td><span class="tag tag-blue">${p.patient_id}</span></td>
+      <td><b>${p.name}</b></td>
+      <td>${p.age}</td>
+      <td><span class="tag tag-amber">${p.blood_type}</span></td>
+      <td>${p.test_reports.length}</td>
+      <td>${p.prescriptions.length}</td>
+      <td>${p.symptoms.length}</td>
+      <td style="color:var(--muted)">${p.created_at}</td>
+    </tr>`).join('')}
+    </tbody></table></div>`;
+}
+
+function renderPatientFull(p, role) {
+  const reports = p.test_reports.map(r=>`<span class="tag tag-blue">${r.report.substring(0,60)}…</span>`).join('') || '<span style="color:var(--muted)">None</span>';
+  const rxs = p.prescriptions.map(r=>`<span class="tag tag-green">${r.prescription.substring(0,60)}…</span>`).join('') || '<span style="color:var(--muted)">None</span>';
+  const syms = p.symptoms.map(r=>`<span class="tag tag-amber">${r.symptoms.substring(0,60)}…</span>`).join('') || '<span style="color:var(--muted)">None</span>';
+  return `<div class="patient-card">
+    <div class="patient-card-header">
+      <div class="patient-avatar">👤</div>
+      <div>
+        <div class="patient-name">${p.name}</div>
+        <div class="patient-meta">ID: ${p.patient_id} · Age: ${p.age} · Blood: ${p.blood_type} · Since: ${p.created_at}</div>
+      </div>
+    </div>
+    <div class="patient-card-body">
+      <div class="info-row"><div class="info-label">Test Reports</div><div>${reports}</div></div>
+      <div class="info-row"><div class="info-label">Prescriptions</div><div>${rxs}</div></div>
+      <div class="info-row"><div class="info-label">Symptoms</div><div>${syms}</div></div>
+    </div>
+  </div>`;
+}
+
+// ─── PANEL: Add Test Report ──────────────────────────
+function panelAddTestReport() {
+  return `<div class="card">
+    <div class="card-title">Submit Test Report</div>
+    <div class="form-grid single">
+      <div class="field"><label>Patient ID</label><input id="tr-id" placeholder="e.g. P001"></div>
+      <div class="field"><label>Report Details</label><textarea id="tr-report" placeholder="e.g. CBC: Hb=11.2 g/dL, WBC=6400/μL – mild anaemia"></textarea></div>
+    </div>
+    <br>
+    <button class="btn btn-primary" onclick="doAddTestReport()">⛓ Submit to Blockchain</button>
+  </div>
+  <div id="tr-result"></div>`;
+}
+
+async function doAddTestReport() {
+  const id     = document.getElementById('tr-id').value.trim();
+  const report = document.getElementById('tr-report').value.trim();
+  if (!id||!report) { toast('error','Missing fields','Enter patient ID and report.'); return; }
+  const r = await POST('/api/test-reports', { patient_id:id, report, requester:'DiagnosticCenter' });
+  if (r.success) {
+    toast('success','Report Submitted', `Block #${r.result.block?.index} mined.`);
+    document.getElementById('tr-result').innerHTML = blockResult(r.result);
+    refreshStats();
+  } else { toast('error','Error', r.result || r.error); }
+}
+
+// ─── PANEL: Update Symptoms ──────────────────────────
+function panelUpdateSymptoms() {
+  return `<div class="card">
+    <div class="card-title">Record Patient Symptoms</div>
+    <div class="form-grid single">
+      <div class="field"><label>Patient ID</label><input id="sym-id" placeholder="e.g. P001"></div>
+      <div class="field"><label>Symptoms</label><textarea id="sym-text" placeholder="e.g. Fatigue, pallor, occasional dizziness"></textarea></div>
+    </div>
+    <br>
+    <button class="btn btn-primary" onclick="doUpdateSymptoms()">⛓ Record on Blockchain</button>
+  </div>
+  <div id="sym-result"></div>`;
+}
+
+async function doUpdateSymptoms() {
+  const id  = document.getElementById('sym-id').value.trim();
+  const sym = document.getElementById('sym-text').value.trim();
+  if (!id||!sym) { toast('error','Missing fields','Enter patient ID and symptoms.'); return; }
+  const r = await POST('/api/symptoms', { patient_id:id, symptoms:sym, requester:'DoctorClinic' });
+  if (r.success) {
+    toast('success','Symptoms Recorded', `Block #${r.result.block?.index} mined.`);
+    document.getElementById('sym-result').innerHTML = blockResult(r.result);
+    refreshStats();
+  } else { toast('error','Error', r.result || r.error); }
+}
+
+// ─── PANEL: Add Prescription ─────────────────────────
+function panelAddPrescription() {
+  return `<div class="card">
+    <div class="card-title">Issue Prescription</div>
+    <div class="form-grid single">
+      <div class="field"><label>Patient ID</label><input id="rx-id" placeholder="e.g. P001"></div>
+      <div class="field"><label>Prescription</label><textarea id="rx-text" placeholder="e.g. Ferrous Sulfate 325 mg PO TID x 30 days"></textarea></div>
+    </div>
+    <br>
+    <button class="btn btn-primary" onclick="doAddPrescription()">⛓ Issue on Blockchain</button>
+  </div>
+  <div id="rx-result"></div>`;
+}
+
+async function doAddPrescription() {
+  const id = document.getElementById('rx-id').value.trim();
+  const rx = document.getElementById('rx-text').value.trim();
+  if (!id||!rx) { toast('error','Missing fields','Enter patient ID and prescription.'); return; }
+  const r = await POST('/api/prescriptions', { patient_id:id, prescription:rx, requester:'DoctorClinic' });
+  if (r.success) {
+    toast('success','Prescription Issued', `Block #${r.result.block?.index} mined.`);
+    document.getElementById('rx-result').innerHTML = blockResult(r.result);
+    refreshStats();
+  } else { toast('error','Error', r.result || r.error); }
+}
+
+// ─── PANEL: Get Prescriptions (Pharmacy) ─────────────
+function panelGetPrescriptions() {
+  return `<div class="card">
+    <div class="card-title">Retrieve Prescriptions</div>
+    <div class="form-grid">
+      <div class="field"><label>Patient ID</label><input id="ph-id" placeholder="e.g. P001"></div>
+    </div>
+    <br>
+    <button class="btn btn-primary" onclick="doGetPrescriptions()">💊 Fetch Prescriptions</button>
+  </div>
+  <div id="ph-result"></div>`;
+}
+
+async function doGetPrescriptions() {
+  const id = document.getElementById('ph-id').value.trim();
+  if (!id) { toast('error','Missing ID','Enter a patient ID.'); return; }
+  const r = await GET(`/api/prescriptions/${id}?requester=Pharmacy`);
+  const el = document.getElementById('ph-result');
+  if (r.success) {
+    const rxs = r.result.prescriptions;
+    const inc = r.result.incentive_tx;
+    toast('success','Prescriptions Retrieved', `${rxs.length} prescription(s) found. Fee: ${inc?.amount||0} tokens.`);
+    el.innerHTML = `
+      ${rxs.length===0 ? '<div class="empty"><span class="emoji">💊</span>No prescriptions found.</div>' : `
+      <div class="card">
+        <div class="card-title">Prescription List</div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>#</th><th>Medication</th><th>Issued By</th><th>Date</th></tr></thead>
+          <tbody>${rxs.map((rx,i)=>`<tr>
+            <td style="color:var(--muted)">${i+1}</td>
+            <td>${rx.prescription}</td>
+            <td><span class="tag tag-green">${rx.by}</span></td>
+            <td style="color:var(--muted)">${rx.timestamp}</td>
+          </tr>`).join('')}</tbody>
+        </table></div>
+      </div>`}
+      ${blockResult(r.result)}`;
+    refreshStats();
+  } else { toast('error','Error', r.result || r.error); }
+}
+
+// ─── PANEL: Chain Explorer ───────────────────────────
+function panelChainExplorer() {
+  return `<div class="card">
+    <div class="card-title">Blockchain Explorer</div>
+    <div id="chain-list"><div class="spinner"></div></div>
+  </div>`;
+}
+
+async function loadChain() {
+  const r = await GET('/api/chain');
+  const el = document.getElementById('chain-list');
+  if (!el) return;
+  if (!r.success) { el.textContent = 'Error loading chain.'; return; }
+  const chain = r.result;
+  el.innerHTML = `<div style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-bottom:16px;">${chain.length} blocks · scrolled newest first</div>
+    <div class="block-list">
+    ${[...chain].reverse().map(b=>`
+    <div class="block-item">
+      <div class="block-num">#${b.index}</div>
+      <div class="block-hash">
+        <b>${b.timestamp} · Miner: ${b.miner}</b>
+        Hash: ${b.hash}<br>
+        Prev: ${b.previous_hash}
+      </div>
+      <div class="block-txns">${b.transactions.length} txns</div>
+    </div>`).join('')}
+    </div>`;
+}
+
+// ─── PANEL: All Transactions ─────────────────────────
+function panelAllTransactions() {
+  return `<div class="card">
+    <div class="card-title">Transaction Ledger</div>
+    <div id="tx-list"><div class="spinner"></div></div>
+  </div>`;
+}
+
+async function loadTransactions() {
+  const r = await GET('/api/transactions');
+  const el = document.getElementById('tx-list');
+  if (!el) return;
+  if (!r.success) { el.textContent = 'Error.'; return; }
+  const txs = r.result;
+  el.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr><th>#</th><th>Block</th><th>Type</th><th>From</th><th>To / Detail</th><th>Amount</th><th>Time</th></tr></thead>
+    <tbody>${txs.map((tx,i)=>{
+      let from = tx.from || tx.requester || '—';
+      let to   = tx.to || tx.patient_id || tx.message || '—';
+      let amt  = tx.amount ? `<span style="color:var(--amber)">${tx.amount}T</span>` : '—';
+      return `<tr>
+        <td style="color:var(--muted)">${i+1}</td>
+        <td><span class="tag tag-blue">${tx.block_index}</span></td>
+        <td><span class="tx-type tx-${tx.type}">${tx.type}</span></td>
+        <td style="color:var(--muted)">${from}</td>
+        <td>${to}</td>
+        <td>${amt}</td>
+        <td style="color:var(--muted);white-space:nowrap">${tx.timestamp||'—'}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div>`;
+}
+
+// ─── PANEL: Wallets ──────────────────────────────────
+function panelWallets() {
+  return `<div class="card">
+    <div class="card-title">Wallet Balances</div>
+    <div id="wallet-list"><div class="spinner"></div></div>
+  </div>`;
+}
+
+async function loadWallets() {
+  const r = await GET('/api/wallets');
+  const el = document.getElementById('wallet-list');
+  if (!el) return;
+  if (!r.success) { el.textContent = 'Error.'; return; }
+  const wallets = r.result;
+  const max = Math.max(...Object.values(wallets));
+  const colors = { Network:'var(--accent)', DiagnosticCenter:'var(--accent)', DoctorClinic:'var(--green)', Pharmacy:'var(--amber)', LedgerNode:'var(--purple)' };
+  el.innerHTML = `<div class="wallet-list">
+    ${Object.entries(wallets).map(([node, bal])=>`
+    <div class="wallet-row">
+      <div class="wallet-name">${node}</div>
+      <div class="wallet-bar-wrap"><div class="wallet-bar" style="width:${(bal/max*100).toFixed(1)}%;background:${colors[node]||'var(--text)'}"></div></div>
+      <div class="wallet-amount">${bal.toFixed(1)} T</div>
+    </div>`).join('')}
+  </div>`;
+}
+
+// ─── PANEL: Validate ─────────────────────────────────
+function panelValidate() {
+  return `<div class="card">
+    <div class="card-title">Chain Integrity</div>
+    <div id="validate-result"><div class="spinner"></div></div>
+  </div>`;
+}
+
+async function loadValidate() {
+  const r = await GET('/api/validate');
+  const el = document.getElementById('validate-result');
+  if (!el) return;
+  const valid = r.result?.valid;
+  el.innerHTML = `
+    <div class="valid-badge ${valid?'ok':'bad'}">
+      ${valid ? '✅ Chain is VALID — no tampering detected' : '❌ Chain INTEGRITY FAILURE'}
+    </div>
+    <p style="margin-top:16px;font-family:var(--font-mono);font-size:12px;color:var(--muted);">
+      ${valid
+        ? 'All block hashes and previous-hash links are consistent. The ledger is intact.'
+        : 'One or more blocks have inconsistent hashes. The chain may have been tampered with.'}
+    </p>`;
+}
+
+// ─── BLOCK RESULT WIDGET ─────────────────────────────
+function blockResult(result) {
+  if (!result?.block && !result?.incentive_tx) return '';
+  const b = result.block;
+  const inc = result.incentive_tx;
+  return `<div class="card" style="border-color:rgba(0,212,255,.2)">
+    <div class="card-title" style="color:var(--green)">Transaction Confirmed</div>
+    ${b ? `<div style="display:flex;gap:20px;flex-wrap:wrap;font-family:var(--font-mono);font-size:12px">
+      <div><div style="color:var(--muted);font-size:10px;margin-bottom:4px">BLOCK</div><span class="tag tag-blue">#${b.index}</span></div>
+      <div style="flex:1"><div style="color:var(--muted);font-size:10px;margin-bottom:4px">HASH</div><span style="word-break:break-all;color:var(--accent)">${b.hash}</span></div>
+      <div><div style="color:var(--muted);font-size:10px;margin-bottom:4px">NONCE</div>${b.nonce}</div>
+    </div>` : ''}
+    ${inc ? `<div style="margin-top:12px;font-family:var(--font-mono);font-size:11px;color:var(--muted)">
+      💸 Incentive: <span style="color:var(--red)">${inc.amount} tokens</span> from <b style="color:var(--text)">${inc.from}</b> → <b style="color:var(--text)">${inc.to}</b>
+    </div>` : ''}
+  </div>`;
+}
+
+// ─── ON PANEL SHOW (lazy load) ───────────────────────
+function onPanelShow(role, name, panel) {
+  if (name === 'Chain Explorer')    loadChain();
+  if (name === 'All Transactions')  loadTransactions();
+  if (name === 'Wallets')           loadWallets();
+  if (name === 'Validate')          loadValidate();
+  if (name === 'View Patient')      loadAllPatients('vp-all');
+}
+</script>
+</body>
+</html>
